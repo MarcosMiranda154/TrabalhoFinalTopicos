@@ -37,9 +37,9 @@ dados$genero = factor(dados$genero)
 #Coluna nivel de instituição
 unique(dados$nivel_instituicao)
 dados$nivel_instituicao = as.character(dados$nivel_instituicao)
+dados[dados$nivel_instituicao == "School",]$nivel_instituicao = "Escola"
 dados[dados$nivel_instituicao == "College",]$nivel_instituicao = "Faculdade"
 dados[dados$nivel_instituicao == "University",]$nivel_instituicao = "Universidade"
-dados[dados$nivel_instituicao == "School",]$nivel_instituicao = "Escola"
 dados$nivel_instituicao = factor(dados$nivel_instituicao)
 
 #Coluna tipo de instituição
@@ -104,30 +104,87 @@ dados$dispositivo_usado_em_aula = factor(dados$dispositivo_usado_em_aula)
 unique(dados$nivel_adaptabilidade)
 dados$nivel_adaptabilidade = as.character(dados$nivel_adaptabilidade)
 dados[dados$nivel_adaptabilidade == "Low",]$nivel_adaptabilidade = "Baixo"
-dados[dados$nivel_adaptabilidade == "High",]$nivel_adaptabilidade = "Alto"
 dados[dados$nivel_adaptabilidade == "Moderate",]$nivel_adaptabilidade = "Moderado"
+dados[dados$nivel_adaptabilidade == "High",]$nivel_adaptabilidade = "Alto"
 dados$nivel_adaptabilidade = factor(dados$nivel_adaptabilidade)
 
 ```
 
 
 ```{r}
-
-head(dados)
+#Testes
 
 #selecionando colunas especificas
 dados[,c('genero','faixa_etaria','nivel_instituicao')]
 select(dados, genero, faixa_etaria, nivel_instituicao)
 
-dadosDeIdade <- filter(dados, faixa_etaria == "21-25", nivel_instituicao == "Universidade")
-
-head(dadosDeIdade)
-plot(dadosDeIdade$nivel_adaptabilidade ~ dadosDeIdade$genero, xlab="Gênero", ylab="Adaptabilidade")
+# Selecionando alunos que estão cursando a Universidade 
+dadosUniversidade <- filter(dados, nivel_instituicao == "Universidade")
 
 ```
 
-```{r}
 
-esquisser(cars)
+```{r}
+#Tratando levels da coluna nivel_adaptabilidade
+dadosUniversidade$nivel_adaptabilidade <- factor(dadosUniversidade$nivel_adaptabilidade,levels = c("Alto", "Moderado", "Baixo"))
+dados$nivel_adaptabilidade <- factor(dados$nivel_adaptabilidade,levels = c("Alto", "Moderado", "Baixo"))
+levels(dadosDeIdade$nivel_adaptabilidade)
+```
+
+Dados com todas as faixas etárias para alunos da universidade 
+
+```{r}
+esquisser(dadosUniversidade)
+
+ggplot(dadosUniversidade) +
+ aes(x = faixa_etaria, fill = nivel_adaptabilidade, group = nivel_adaptabilidade) +
+ geom_bar(position = "dodge") +
+ scale_fill_hue(direction = 1) +
+ labs(x = "Faixa etária de idade", 
+ y = "Quantidade de alunos ", title = "Alunos da Universidade", fill = "Nivel de Adaptabilidade ") +
+ theme_gray() +
+ theme(plot.title = element_text(face = "bold", hjust = 0.5))
+```
+
+
+```{r}
+dadosNivelAlto <- filter(dadosUniversidade, nivel_adaptabilidade == "Alto")
+
+ggplot(dadosNivelAlto) +
+ aes(x = faixa_etaria) +
+ geom_bar(fill = "#E15656") +
+ labs(x = "Faixa etária", 
+ y = "Quantidade de alunos", title = "Nivel de adaptabilidade Alto") +
+ theme_gray() +
+ theme(plot.title = element_text(face = "bold", 
+ hjust = 0.5))
+```
+
+```{r}
+dadosNivelModerado <- filter(dadosUniversidade, nivel_adaptabilidade == "Moderado")
+
+
+ggplot(dadosNivelModerado) +
+ aes(x = faixa_etaria) +
+ geom_bar(fill = "#228B22") +
+ labs(x = "Faixa etária ", 
+ y = "Quantidade de alunos ", title = "Nivel de adaptabilidade Moderado") +
+ theme_gray() +
+ theme(plot.title = element_text(face = "bold", 
+ hjust = 0.5))
+```
+
+```{r}
+dadosNivelBaixo <- filter(dadosUniversidade, nivel_adaptabilidade == "Baixo")
+
+ggplot(dadosNivelBaixo) +
+ aes(x = faixa_etaria) +
+ geom_bar(fill = "#4682B4") +
+ labs(x = "Faixa etária ", 
+ y = "Quantidade de alunos ", title = "Nivel de adaptabilidade Baixo") +
+ theme_gray() +
+ theme(plot.title = element_text(face = "bold", 
+ hjust = 0.5))
+
 ```
 
